@@ -81,6 +81,29 @@
     <Compile Include="Assets\RoomAliveToolkit\Scripts\Kinect\RATKinectPlaybackController.cs" />
     <Compile Include="Assets\RoomAliveToolkit\Scripts\Kinect\RATSkeletonProvider.cs" />
     <Compile Include="Assets\RoomAliveToolkit\Scripts\Projection\RATDynamicMask.cs" />
+    <Compile Include="Assets\Hummingbird\Scripts\GoalObject.cs" />
+    <Compile Include="Assets\Hummingbird\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Predator.cs" />
+    <Compile Include="Assets\Hummingbird\Scripts\HumanHandAvatar.cs" />
+    <Compile Include="Assets\Scripts\CameraFollow.cs" />
+    <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
+    <Compile Include="Assets\Hummingbird\Scripts\FibonacciRays.cs" />
+    <Compile Include="Assets\Scripts\TurnRight.cs" />
+    <Compile Include="Assets\Scripts\MoveUp.cs" />
+    <Compile Include="Assets\Hummingbird\Scripts\FlowerArea.cs" />
+    <Compile Include="Assets\Scripts\MoveToDestination.cs" />
+    <Compile Include="Assets\Scripts\TurnLeft.cs" />
+    <Compile Include="Assets\Hummingbird\Scripts\HummingbirdAgent.cs" />
+    <Compile Include="Assets\Hummingbird\Scripts\CrowdMember.cs" />
+    <Compile Include="Assets\Hummingbird\Scripts\CrowdManager.cs" />
+    <Compile Include="Assets\Hummingbird\Scripts\Flower.cs" />
+    <Compile Include="Assets\RotationHand.cs" />
+    <Compile Include="Assets\ReciveIndex.cs" />
+    <Compile Include="Assets\Hummingbird\Scripts\UIController.cs" />
+    <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
+    <Compile Include="Assets\Scripts\MoveDown.cs" />
+    <Compile Include="Assets\Scripts\Drive.cs" />
+    <Compile Include="Assets\Scripts\MoveForward.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\RoomAliveToolkit\Shaders\ReplacementColorUnlitShader.shader" />
@@ -281,6 +304,24 @@
     </Reference>
     <Reference Include="UnityEditor">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.6f1\Editor\Data\Managed\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Unsafe">
+      <HintPath>Library\PackageCache\com.unity.burst@1.3.4\Unity.Burst.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Abstractions.TestingHelpers">
+      <HintPath>C:\Telefly\ml-agents-release_7\com.unity.ml-agents\Plugins\System.IO.Abstractions.TestingHelpers.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf">
+      <HintPath>Library\PackageCache\com.unity.barracuda@1.1.1-preview\Barracuda\Runtime\Plugins\ProtoBuffer\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Abstractions">
+      <HintPath>C:\Telefly\ml-agents-release_7\com.unity.ml-agents\Plugins\System.IO.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Interactive.Async">
+      <HintPath>C:\Telefly\ml-agents-release_7\com.unity.ml-agents\Plugins\ProtoBuffer\System.Interactive.Async.dll</HintPath>
+    </Reference>
+    <Reference Include="Grpc.Core">
+      <HintPath>C:\Telefly\ml-agents-release_7\com.unity.ml-agents\Plugins\ProtoBuffer\Grpc.Core.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.6f1\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\mscorlib.dll</HintPath>
@@ -653,6 +694,45 @@
     </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Barracuda.MacBLAS">
+      <HintPath>Library\ScriptAssemblies\Unity.Barracuda.MacBLAS.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst">
+      <HintPath>Library\ScriptAssemblies\Unity.Burst.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Barracuda.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Barracuda.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Barracuda">
+      <HintPath>Library\ScriptAssemblies\Unity.Barracuda.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Barracuda.iOSBLAS">
+      <HintPath>Library\ScriptAssemblies\Unity.Barracuda.iOSBLAS.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ML-Agents.CommunicatorObjects">
+      <HintPath>Library\ScriptAssemblies\Unity.ML-Agents.CommunicatorObjects.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Barracuda.BurstBLAS">
+      <HintPath>Library\ScriptAssemblies\Unity.Barracuda.BurstBLAS.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mathematics">
+      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mathematics.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ML-Agents.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.ML-Agents.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ML-Agents">
+      <HintPath>Library\ScriptAssemblies\Unity.ML-Agents.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Barracuda.ONNX">
+      <HintPath>Library\ScriptAssemblies\Unity.Barracuda.ONNX.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
