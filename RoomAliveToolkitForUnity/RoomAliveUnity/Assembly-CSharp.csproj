@@ -55,40 +55,25 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Hummingbird\Scripts\GoalObject.cs" />
     <Compile Include="Assets\RoomAliveToolkit\Scripts\Projection\RATProjectionManager.cs" />
     <Compile Include="Assets\RoomAliveToolkit\Scripts\Projection\RATProjectionPass.cs" />
     <Compile Include="Assets\RoomAliveToolkit\Scripts\RATCalibrationData.cs" />
+    <Compile Include="Assets\Hummingbird\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Predator.cs" />
+    <Compile Include="Assets\Hummingbird\Scripts\HumanHandAvatar.cs" />
     <Compile Include="Assets\RoomAliveToolkit\Scripts\Kinect\RATKinectSkeleton.cs" />
     <Compile Include="Assets\RoomAliveToolkit\Scripts\Kinect\RATNetworkStreamer.cs" />
+    <Compile Include="Assets\Scripts\CameraFollow.cs" />
+    <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
     <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\UnmanagedImage.cs" />
     <Compile Include="Assets\RoomAliveToolkit\Scripts\Users\RATUser.cs" />
     <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\Win32.cs" />
     <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\RGBImage.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\ByteImage.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Projection\RATProjector.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\ARGBImage.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Kinect\RATKinectClient.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\FrameRate.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\UnityUtilities.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\RATSceneSetup.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\ShortImage.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Kinect\RATDepthMesh.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\ProjectorCameraEnsemble.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\Float2Image.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\Matrix.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\FloatImage.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Users\RATUserViewCamera.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Kinect\RATKinectPlaybackController.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Kinect\RATSkeletonProvider.cs" />
-    <Compile Include="Assets\RoomAliveToolkit\Scripts\Projection\RATDynamicMask.cs" />
-    <Compile Include="Assets\Hummingbird\Scripts\GoalObject.cs" />
-    <Compile Include="Assets\Hummingbird\Scripts\GameManager.cs" />
-    <Compile Include="Assets\Predator.cs" />
-    <Compile Include="Assets\Hummingbird\Scripts\HumanHandAvatar.cs" />
-    <Compile Include="Assets\Scripts\CameraFollow.cs" />
-    <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
     <Compile Include="Assets\Hummingbird\Scripts\FibonacciRays.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\ByteImage.cs" />
     <Compile Include="Assets\Scripts\TurnRight.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Projection\RATProjector.cs" />
     <Compile Include="Assets\Scripts\MoveUp.cs" />
     <Compile Include="Assets\Hummingbird\Scripts\FlowerArea.cs" />
     <Compile Include="Assets\Scripts\MoveToDestination.cs" />
@@ -96,13 +81,28 @@
     <Compile Include="Assets\Hummingbird\Scripts\HummingbirdAgent.cs" />
     <Compile Include="Assets\Hummingbird\Scripts\CrowdMember.cs" />
     <Compile Include="Assets\Hummingbird\Scripts\CrowdManager.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\ARGBImage.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Kinect\RATKinectClient.cs" />
     <Compile Include="Assets\Hummingbird\Scripts\Flower.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\FrameRate.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\UnityUtilities.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\RATSceneSetup.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\ShortImage.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Kinect\RATDepthMesh.cs" />
     <Compile Include="Assets\RotationHand.cs" />
     <Compile Include="Assets\ReciveIndex.cs" />
     <Compile Include="Assets\Hummingbird\Scripts\UIController.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Scripts\MoveDown.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\ProjectorCameraEnsemble.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\Float2Image.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\Matrix.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Utilities\FloatImage.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Users\RATUserViewCamera.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Kinect\RATKinectPlaybackController.cs" />
     <Compile Include="Assets\Scripts\Drive.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Kinect\RATSkeletonProvider.cs" />
+    <Compile Include="Assets\RoomAliveToolkit\Scripts\Projection\RATDynamicMask.cs" />
     <Compile Include="Assets\Scripts\MoveForward.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -305,23 +305,23 @@
     <Reference Include="UnityEditor">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.6f1\Editor\Data\Managed\UnityEditor.dll</HintPath>
     </Reference>
+    <Reference Include="Google.Protobuf">
+      <HintPath>Library\PackageCache\com.unity.barracuda@1.1.2-preview\Barracuda\Runtime\Plugins\ProtoBuffer\Google.Protobuf.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.Burst.Unsafe">
       <HintPath>Library\PackageCache\com.unity.burst@1.3.4\Unity.Burst.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Abstractions.TestingHelpers">
-      <HintPath>C:\Telefly\ml-agents-release_7\com.unity.ml-agents\Plugins\System.IO.Abstractions.TestingHelpers.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Protobuf">
-      <HintPath>Library\PackageCache\com.unity.barracuda@1.1.1-preview\Barracuda\Runtime\Plugins\ProtoBuffer\Google.Protobuf.dll</HintPath>
+      <HintPath>C:\Users\CY\Desktop\ml-agents-master\ml-agents-master\com.unity.ml-agents\Plugins\System.IO.Abstractions.TestingHelpers.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Abstractions">
-      <HintPath>C:\Telefly\ml-agents-release_7\com.unity.ml-agents\Plugins\System.IO.Abstractions.dll</HintPath>
+      <HintPath>C:\Users\CY\Desktop\ml-agents-master\ml-agents-master\com.unity.ml-agents\Plugins\System.IO.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="System.Interactive.Async">
-      <HintPath>C:\Telefly\ml-agents-release_7\com.unity.ml-agents\Plugins\ProtoBuffer\System.Interactive.Async.dll</HintPath>
+      <HintPath>C:\Users\CY\Desktop\ml-agents-master\ml-agents-master\com.unity.ml-agents\Plugins\ProtoBuffer\System.Interactive.Async.dll</HintPath>
     </Reference>
     <Reference Include="Grpc.Core">
-      <HintPath>C:\Telefly\ml-agents-release_7\com.unity.ml-agents\Plugins\ProtoBuffer\Grpc.Core.dll</HintPath>
+      <HintPath>C:\Users\CY\Desktop\ml-agents-master\ml-agents-master\com.unity.ml-agents\Plugins\ProtoBuffer\Grpc.Core.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.6f1\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\mscorlib.dll</HintPath>
