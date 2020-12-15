@@ -90,7 +90,7 @@ namespace RoomAliveToolkit
         protected Rect rectReadRT;
         protected RATDepthMesh[] depthMeshes;
 
-
+        public DrawMeshInstancedIndirectDemo boid;
         public bool hasManager
         {
             get
@@ -109,6 +109,7 @@ namespace RoomAliveToolkit
 
         void Start()
         {
+            boid = this.gameObject.transform.parent.GetChild(4).GetComponent<DrawMeshInstancedIndirectDemo>();
             meshFilter = gameObject.AddComponent<MeshFilter>();
             meshRenderer = gameObject.AddComponent<MeshRenderer>();
             Shader unlitShader = Shader.Find("Unlit/Texture");
@@ -124,11 +125,11 @@ namespace RoomAliveToolkit
                 projectionManager.RegisterUser(this);
 
             //Code assumes that this script is added to the camera GO 
-            cameraGO = this.gameObject;
+            cameraGO = this.gameObject; //camera gameobject is 'USER'
 
-            cam = this.GetComponent<Camera>();
-            if (cam == null)
-                cam = gameObject.AddComponent<Camera>();
+            cam = this.gameObject.GetComponent<Camera>();
+            if (cam == null)  // cam is null in our case
+                cam = this.gameObject.AddComponent<Camera>();
             cam.hideFlags = HideFlags.HideInInspector;  // | HideFlags.HideInHierarchy
 
             cam.rect = new Rect(0, 0, 1, 1);
@@ -201,14 +202,17 @@ namespace RoomAliveToolkit
         /// </summary>
         public void RenderUserView()
         {
+            // draw virtual3dObject
             cam.cullingMask = virtualObjectsMask;
             cam.backgroundColor = backgroundColor;
             cam.targetTexture = targetRGBTexture;
             cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.Render();
+            cam.Render(); // render virtual object by using mesh renderer of each virtual object(its material and shader(standard shader))
+            // end of render
 
             cam.clearFlags = CameraClearFlags.Nothing;
 
+            // draw static and dynmaic surfaces
             foreach (RATProjectionPass layer in projectionLayers)
             {
                 if (layer.renderUserView && layer.userViewShader != null && layer.enabled)
@@ -220,7 +224,15 @@ namespace RoomAliveToolkit
                     
                 }
             }
+            // end draw 
+
             cam.clearFlags = CameraClearFlags.SolidColor;
+
+
+            // draw the boids
+            Graphics.DrawMeshInstancedIndirect(boid.mesh, 0, boid.material, boid.bounds, boid.argsBuffer, camera: cam);
+            //Graphics.DrawMeshInstancedIndirect(boid.mesh, 0, boid.material, boid.bounds, boid.argsBuffer, layer: boid.boidLayer, camera: cam);
+
         }
 
         public virtual void RenderProjection(Camera camera)

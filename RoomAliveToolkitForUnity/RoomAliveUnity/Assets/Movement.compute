@@ -1,0 +1,239 @@
+﻿#pragma kernel CSMain
+
+struct MeshProperties { 
+    float4x4 mat;
+    float4 color;
+
+	float3 velocity;
+};
+
+RWStructuredBuffer<MeshProperties> _Properties; 
+// float3 _PusherPosition; 
+
+int _population;
+
+float _distanceFromAttracter;
+float _neighborRadius;
+float _deltaTime;
+float _avoidanceRadius;
+
+float _cohSpeed;
+
+float _cohWeight;
+float _alignWeight;
+float _avoidWeight;
+
+float _minDistance;
+float _minTheta;
+
+float3 _boundsSize;
+
+float3 currentDir;
+float3 targetDir;
+float3 axis;
+float3 nextDir;
+float deltaSpeed;
+float dotProduct;
+float theta;
+float deltaTheta;
+float currentSpeed;
+float targetSpeed;
+float nextSpeed;
+float3 nextVelocity;
+float3 nextPosition;
+float3 velocityDiff;
+
+RWStructuredBuffer<float3> _currentVelocityBuffer;
+RWStructuredBuffer<float3> _cohVelocityBuffer;
+RWStructuredBuffer<float3> _alignVelocityBuffer;
+RWStructuredBuffer<float3> _avoidVelocityBuffer;
+
+float3 getAgentPosition(int myIndex, RWStructuredBuffer<MeshProperties> _Properties)
+{
+	float4x4 mat = _Properties[myIndex].mat;
+	float3 myPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
+	return myPosition;
+}
+
+float3 getAgentVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Properties)
+{
+	float3 myVelocity = _Properties[myIndex].velocity;
+	return myVelocity;
+}
+
+// 'Cohesion' function of the 'Crowd Member' class 
+float3 getCohVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _neigborRadius, int _population, float _cohSpeed)
+{
+	float3 myPosition = getAgentPosition(myIndex, _Properties);
+	float3 myVelocity = _Properties[myIndex].velocity;
+	float neighborCount = 0.0;
+	float3 sumOfOtherAgentPosition = float3(0.0, 0.0, 0.0);
+	float3 cohDir = float3(0.0, 0.0, 0.0);
+	float3 cohVelocity = float3(0.0, 0.0, 0.0);
+	for (int index = 0; index < _population; index++)
+	{
+		float3 otherAgentPosition = getAgentPosition(index, _Properties);
+		if (distance(myPosition, otherAgentPosition) < _neigborRadius)
+		{
+			sumOfOtherAgentPosition += otherAgentPosition;
+			neighborCount += 1;
+		}
+	}
+	if (neighborCount == 0.0)
+	{
+		cohVelocity = myVelocity;
+	}
+	float3 centerOfMass = sumOfOtherAgentPosition / neighborCount;
+	float3 cohTargetVector = centerOfMass - myPosition; 
+	if (length(cohTargetVector) != 0)
+	{
+		cohDir = normalize(cohTargetVector);
+	}
+	else
+	{
+		cohDir = normalize(myVelocity);
+	}
+	cohVelocity = cohDir * _cohSpeed;
+
+	return cohVelocity;
+}
+
+// 'Alignment' function of the 'Crowd Member' class
+float3 getAlignVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _neigborRadius, int _population)
+{
+	float3 myPosition = getAgentPosition(myIndex, _Properties);
+	float3 myVelocity = getAgentVelocity(myIndex, _Properties);
+	float3 sumOfOtherAgentVelocity = float3(0.0, 0.0, 0.0);
+	float3 alignVelocity = float3(0.0, 0.0, 0.0);
+	float neighborCount = 0.0;
+
+	for (int index = 0; index < _population; index++)
+	{
+		float3 otherAgentPosition = getAgentPosition(index, _Properties);
+		if (distance(myPosition, otherAgentPosition) < _neigborRadius)
+		{
+			float3 otherAgentVelocity = getAgentVelocity(index, _Properties);
+			sumOfOtherAgentVelocity += otherAgentVelocity;
+			neighborCount += 1.0;
+		}
+	}
+	alignVelocity = sumOfOtherAgentVelocity;
+
+	if (neighborCount == 0.0)
+	{
+		alignVelocity = myVelocity;
+	}
+	else // neigborCount != 0.0
+	{
+		alignVelocity = sumOfOtherAgentVelocity / neighborCount;
+		if (length(alignVelocity) == 0.0)
+		{
+			alignVelocity == myVelocity;
+		}
+	}
+	return alignVelocity;
+}
+
+// 'Avoidance' function of the 'Crowd Member' class
+float3 getAvoidVelocity(int myIndex, RWStructuredBuffer<MeshProperties> _Properties, float _neigborRadius, int _population, float _avoidanceRadius, float _minDistance)
+{
+	float3 myPosition = getAgentPosition(myIndex, _Properties);
+	float3 myVelocity = _Properties[myIndex].velocity;
+	float3 sumOfValidAvoidVelocity = float3(0.0, 0.0, 0.0);  
+	float nAvoid = 0.0;
+	float3 avoidVelocity = float3(0.0, 0.0, 0.0);
+
+	for (int index = 0; index < _population; index++)
+	{
+		float3 otherAgentPosition = getAgentPosition(index, _Properties); 
+		if (distance(myPosition, otherAgentPosition) < _avoidanceRadius)
+		{
+			float3 avoidVelocity = myPosition - otherAgentPosition;
+			float dist = length(avoidVelocity);
+			if (dist < _minDistance)
+			{
+				dist = _minDistance;
+			}
+			sumOfValidAvoidVelocity += avoidVelocity / dist;
+			nAvoid += 1;
+		}
+	}
+	if (nAvoid == 0.0)
+	{
+		avoidVelocity = myVelocity;
+	}
+	if (nAvoid > 0.0)
+	{
+		avoidVelocity = sumOfValidAvoidVelocity / nAvoid;
+		if (length(avoidVelocity) == 0.0)
+		{
+			avoidVelocity = myVelocity;
+		}
+	}
+	return avoidVelocity;
+}
+
+// floating point division by zero at kernel CSMain
+// We used to just be able to use (1, 1, 1) threads for whatever population (not sure the old limit), but a Unity update
+// imposed a thread limit of 65535.  Now, to render populations above that, we need to be more granular with our threads.
+
+[numthreads(64, 1, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID) {	
+	float4x4 mat = _Properties[id.x].mat;
+	float3 currentPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
+	float3 currentVelocity = _Properties[id.x].velocity;
+
+	_currentVelocityBuffer[id.x] = currentVelocity;
+
+	float3 cohVelocity = getCohVelocity(id.x, _Properties, _neighborRadius, _population, _cohSpeed);
+	float3 alignVelocity = getAlignVelocity(id.x, _Properties, _neighborRadius, _population);
+	float3 avoidVelocity = getAvoidVelocity(id.x, _Properties, _neighborRadius, _population, _avoidanceRadius, _minDistance); 
+
+	_cohVelocityBuffer[id.x] = cohVelocity;
+	_alignVelocityBuffer[id.x] = alignVelocity;
+	_avoidVelocityBuffer[id.x] = avoidVelocity;
+
+	float3 targetVelocity = _cohWeight * cohVelocity + _alignWeight * alignVelocity + _avoidWeight * avoidVelocity;
+
+	// if statement conditional expressions must evaluate to a scalar at kernel CSMain
+	if (targetVelocity.x == currentVelocity.x && targetVelocity.y == currentVelocity.y && targetVelocity.z == currentVelocity.z)
+	{
+		nextVelocity = currentVelocity;
+		nextPosition = currentPosition + nextVelocity * _deltaTime;
+
+		_Properties[id.x].mat[0][3] = nextPosition.x;
+		_Properties[id.x].mat[1][3] = nextPosition.y;
+		_Properties[id.x].mat[2][3] = nextPosition.z;
+
+		_Properties[id.x].velocity = nextVelocity;
+		return; 
+	}
+
+	if (length(currentVelocity) == 0)
+	{
+		nextVelocity = currentVelocity;
+		nextPosition = currentPosition + nextVelocity * _deltaTime;
+
+		_Properties[id.x].mat[0][3] = nextPosition.x;
+		_Properties[id.x].mat[1][3] = nextPosition.y;
+		_Properties[id.x].mat[2][3] = nextPosition.z;
+
+		_Properties[id.x].velocity = nextVelocity;
+		return;  
+	}
+
+	velocityDiff = targetVelocity - currentVelocity;
+	nextVelocity = currentVelocity + velocityDiff; 
+	nextPosition = currentPosition + nextVelocity * _deltaTime;
+
+	if (nextPosition.x < -_boundsSize.x/2 || nextPosition.x > _boundsSize.x/2 || nextPosition.y < -_boundsSize.y/2 || nextPosition.y > _boundsSize.y/2 || nextPosition.z < -_boundsSize.z/2 || nextPosition.z > _boundsSize.z/2)
+	{
+		nextVelocity = -nextVelocity; 
+	}
+
+	_Properties[id.x].mat[0][3] = nextPosition.x;
+	_Properties[id.x].mat[1][3] = nextPosition.y;
+	_Properties[id.x].mat[2][3] = nextPosition.z;
+
+	_Properties[id.x].velocity = nextVelocity;
+}
