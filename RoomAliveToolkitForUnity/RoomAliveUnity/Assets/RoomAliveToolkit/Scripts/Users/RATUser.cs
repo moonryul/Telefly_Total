@@ -78,7 +78,7 @@ namespace RoomAliveToolkit
                     if (updateFromKinect)
                     {
 
-                        transform.position = getHeadPosition(); 
+                        this.gameObject.transform.position = getHeadPosition(); 
                         if (lookAt != null)
                         {
                             transform.LookAt(lookAt.transform.position);
