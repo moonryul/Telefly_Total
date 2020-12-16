@@ -107,7 +107,7 @@ namespace RoomAliveToolkit {
             {
                 if (screenSetup == ConfigOptions.Editor)
                 {
-                    projection.GetComponent<Camera>().targetDisplay = 0;
+                    projection.GetComponent<Camera>().targetDisplay = 0; // the first display (the first gameview)
                     projection.GetComponent<Camera>().rect = screenViewports[cnt];
                 }
                 if (screenSetup == ConfigOptions.MultiDisplay)

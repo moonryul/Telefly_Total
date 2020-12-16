@@ -51,7 +51,7 @@ public class RATDynamicMask : MonoBehaviour {
         if (!s)
         {
             Debug.Log("Missing shader in " + ToString());
-            enabled = false;
+            enabled = false; // this.enabled
             return null;
         }
 
@@ -93,6 +93,8 @@ public class RATDynamicMask : MonoBehaviour {
         return;
     }
 
+   
+    //This message is sent to all scripts attached to the camera.
     void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
         if (!isSupported)

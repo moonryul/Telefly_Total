@@ -149,7 +149,7 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
 
     private void Start() {
         // get the camera 
-        userViewCamera = this.gameObject.GetComponentInParent<Camera>();
+        //userViewCamera = this.gameObject.GetComponentInParent<Camera>();
         Setup();
     }
 

@@ -58,7 +58,7 @@ namespace RoomAliveToolkit
 
         public void Awake()
         {
-            cam = this.GetComponent<Camera>();
+            cam = this.gameObject.GetComponent<Camera>(); // this.gameObject is Projector_0
             LoadCalibrationData();
             if (projectionManager == null)
             {
@@ -73,7 +73,10 @@ namespace RoomAliveToolkit
 
             cam.enabled = false;
 
-            dynamicMask = GetComponent<RATDynamicMask>();
+            dynamicMask = this.gameObject.GetComponent<RATDynamicMask>(); // get the reference if Projector_0, this.gameObject,
+                                                                          // has RATDynamicMask component
+                                                                          // RATDynamicMask has OnRenderImage() method; So it is assumed
+                                                                          // that this.gameObjectis a Camera gameObject, i.e. a gameObject with Camera omponent.
 
             initialized = true;
         }
@@ -93,7 +96,8 @@ namespace RoomAliveToolkit
 
         internal void LoadCalibrationData()
         {
-            cam = this.GetComponent<Camera>();
+            cam = this.gameObject.GetComponent<Camera>(); // this.gameObject is Projector_0, which has a Camera component
+                                                          // RATProjectionManager has a list of projectors and userviewCameras
             projConfig = null;
             if (hasCalibration)
             {
@@ -181,41 +185,60 @@ namespace RoomAliveToolkit
 
         }
 
-        public void Render()
+        public void Render() // called by projector.Render() in RATProjectionManager.cs
         {
             if (!hasManager)
                 return;
 
-            int prevCulling = cam.cullingMask;
+            int prevCulling = cam.cullingMask; // save the culling mask of the projector camera
 
             bool maskWasEnabled = false;
             if (dynamicMask != null)
             {
-                maskWasEnabled = dynamicMask.enabled;
-                dynamicMask.enabled = false;
+                maskWasEnabled = dynamicMask.enabled; // dynamicMask is a monobehavior object
+                dynamicMask.enabled = false; // disable the monobehavior object, so that it is not executed at all;
+                                             // In particular, its OnImageRender() method will not be called.
             }
 
+            // Render the virtualTexture layer (which is viewer independent) to the projector camera (cam)
             cam.depth = 1;
             cam.backgroundColor = projectionManager.backgroundColor;
-            cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.cullingMask = projectionManager.textureLayers;
-            cam.Render();
+            cam.clearFlags = CameraClearFlags.SolidColor; //  Clear with a background color.
+            //
 
-            cam.clearFlags = CameraClearFlags.Nothing;
+            cam.cullingMask = projectionManager.textureLayers; // specified in the inspector
+
+            cam.Render();
+            // End:  Render the gameObjects (virtual Objects) whose layer is virtualTexture  to the projector camera (cam).
+            // If there are no such gameObjects, no virtualTexture will be drawn in space.
+            // VirtualTextures – virtual objects that should be texture mapped onto existing surfaces; 
+            // these objects will be rendered as flat user-independent layers, like stickers on the physical geometry
+            // To use this feature: Add one plane object, sized appropriately and placed in front of some wall in the scene.
+            // Add that plane to VirtualTextures layer. You are supposed to associate a texture image to this plane object,
+            // to which MeshRenderer component is attached. 
+            
+            cam.clearFlags = CameraClearFlags.Nothing; //  Don't clear anything; use the current color of the renderTexture result
+                                                       //  of the previous rendering
+            
             for (int i = 0; i < userCount; i++)
             {
-                RATUserViewCamera userView = projectionManager.userViewCameras[i];
+                RATUserViewCamera userView = projectionManager.userViewCameras[i]; // ProjectioinManager has a list of userViewCameras
                 if (!userView.isActiveAndEnabled)
                     continue;
-                userView.RenderProjection(cam);
+                userView.RenderProjection(cam); // render the user view image  to projector camera (cam) by means of 
+                                                // projective texture. 
             }
 
             if (dynamicMask != null && maskWasEnabled)
             {
-                dynamicMask.enabled = maskWasEnabled;
+                dynamicMask.enabled = maskWasEnabled; // Enable DynamicMask object, so that its OnImageRender() is called
                 cam.clearFlags = CameraClearFlags.Nothing;
-                cam.cullingMask = 0;
-                cam.Render();
+
+                cam.cullingMask = 0; // render nothing: cam is a projector camera
+
+                cam.Render(); // it is assumed that RATDynamicMask component is attached to cam gameObject, 
+                              // so that OnImageRender() method of RATDynamicMaks is invoked upon cam.Render()
+                
             }
             
 

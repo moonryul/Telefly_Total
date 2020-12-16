@@ -81,7 +81,7 @@ namespace RoomAliveToolkit
                         this.gameObject.transform.position = getHeadPosition(); 
                         if (lookAt != null)
                         {
-                            transform.LookAt(lookAt.transform.position);
+                            this.gameObject.transform.LookAt(lookAt.transform.position);
                         }
                         //else transform.localRotation = Quaternion.identity;
 
