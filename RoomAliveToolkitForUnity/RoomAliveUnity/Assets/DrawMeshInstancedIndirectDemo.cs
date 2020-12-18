@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
 
-    Camera userViewCamera;
-    public int boidLayer = 12;
+   // Camera userViewCamera;
+   // public int boidLayer = 12;
 
     public int population; 
     public float range;
@@ -37,21 +37,21 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
     public ComputeShader computeShader; 
     // public Transform pusher;
 
-    private ComputeBuffer meshPropertiesBuffer;
+    public ComputeBuffer meshPropertiesBuffer;
     public ComputeBuffer argsBuffer;
 
     public Mesh mesh; 
     public Bounds bounds;
 
-    Vector3[] currentVelocityArray;
-    Vector3[] cohVelocityArray;
-    Vector3[] alignVelocityArray;
-    Vector3[] avoidVelocityArray;
+    //Vector3[] currentVelocityArray;
+    //Vector3[] cohVelocityArray;
+    //Vector3[] alignVelocityArray;
+    //Vector3[] avoidVelocityArray;
 
-    private ComputeBuffer currentVelocityBuffer;
-    private ComputeBuffer cohVelocityBuffer;
-    private ComputeBuffer alignVelocityBuffer;
-    private ComputeBuffer avoidVelocityBuffer;
+    //private ComputeBuffer currentVelocityBuffer;
+    //private ComputeBuffer cohVelocityBuffer;
+    //private ComputeBuffer alignVelocityBuffer;
+    //private ComputeBuffer avoidVelocityBuffer;
 
     int kernel;
     MeshProperties[] properties;
@@ -149,7 +149,7 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
 
     private void Start() {
         // get the camera 
-        //userViewCamera = this.gameObject.GetComponentInParent<Camera>();
+       // userViewCamera = this.gameObject.GetComponentInParent<Camera>();
         Setup();
     }
 
@@ -186,7 +186,7 @@ public class DrawMeshInstancedIndirectDemo : MonoBehaviour {
         //}
 
         //Graphics.DrawMeshInstancedIndirect(mesh, 0, material, bounds, argsBuffer);
-        //Graphics.DrawMeshInstancedIndirect(mesh, 0, material, bounds, argsBuffer, layer : boidLayer, camera : userViewCamera) ;
+        //Graphics.DrawMeshInstancedIndirect(mesh, 0, material, bounds, argsBuffer, layer : 0, camera : Camera.main) ;
 
     }
 

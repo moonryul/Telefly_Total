@@ -2,6 +2,11 @@
     SubShader {
         Tags { "RenderType" = "Opaque" }
 
+        //Cull Off
+        //Lighting Off
+        //ZWrite Off
+        //Blend SrcAlpha OneMinusSrcAlpha
+
         Pass {
             CGPROGRAM
             #pragma vertex vert

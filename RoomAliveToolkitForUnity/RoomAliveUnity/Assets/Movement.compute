@@ -43,10 +43,10 @@ float3 nextVelocity;
 float3 nextPosition;
 float3 velocityDiff;
 
-RWStructuredBuffer<float3> _currentVelocityBuffer;
-RWStructuredBuffer<float3> _cohVelocityBuffer;
-RWStructuredBuffer<float3> _alignVelocityBuffer;
-RWStructuredBuffer<float3> _avoidVelocityBuffer;
+//RWStructuredBuffer<float3> _currentVelocityBuffer;
+//RWStructuredBuffer<float3> _cohVelocityBuffer;
+//RWStructuredBuffer<float3> _alignVelocityBuffer;
+//RWStructuredBuffer<float3> _avoidVelocityBuffer;
 
 float3 getAgentPosition(int myIndex, RWStructuredBuffer<MeshProperties> _Properties)
 {
@@ -183,15 +183,15 @@ void CSMain(uint3 id : SV_DispatchThreadID) {
 	float3 currentPosition = float3(mat[0][3], mat[1][3], mat[2][3]);
 	float3 currentVelocity = _Properties[id.x].velocity;
 
-	_currentVelocityBuffer[id.x] = currentVelocity;
+	// _currentVelocityBuffer[id.x] = currentVelocity;
 
 	float3 cohVelocity = getCohVelocity(id.x, _Properties, _neighborRadius, _population, _cohSpeed);
 	float3 alignVelocity = getAlignVelocity(id.x, _Properties, _neighborRadius, _population);
 	float3 avoidVelocity = getAvoidVelocity(id.x, _Properties, _neighborRadius, _population, _avoidanceRadius, _minDistance); 
 
-	_cohVelocityBuffer[id.x] = cohVelocity;
-	_alignVelocityBuffer[id.x] = alignVelocity;
-	_avoidVelocityBuffer[id.x] = avoidVelocity;
+	//_cohVelocityBuffer[id.x] = cohVelocity;
+	//_alignVelocityBuffer[id.x] = alignVelocity;
+	//_avoidVelocityBuffer[id.x] = avoidVelocity;
 
 	float3 targetVelocity = _cohWeight * cohVelocity + _alignWeight * alignVelocity + _avoidWeight * avoidVelocity;
 

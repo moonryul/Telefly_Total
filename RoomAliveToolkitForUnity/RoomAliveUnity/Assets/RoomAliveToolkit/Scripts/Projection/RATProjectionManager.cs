@@ -75,19 +75,25 @@ namespace RoomAliveToolkit {
 
         void Start () {
 
-            if (gameObject.GetComponent<Camera>() == null) gameObject.AddComponent<Camera>();
+            if (this.gameObject.GetComponent<Camera>() == null)
+            {
+                // if myRoom does not have a camera componnet, add it.
+                // Add Camera component to this.gameObject, myRoom. That is, make myRoom a "Camera" gameObject,
+                // so that this.OnPostRender() gets called:
+                this.gameObject.AddComponent<Camera>();
+            }
 
             //projection manager needs a camera so that its OnPostRender() function get called on the render thread. 
-            var cam = gameObject.GetComponent<Camera>();
+            var projectionManagerCam = this.gameObject.GetComponent<Camera>();
 
             //Fix for the bug in overlay rendering depth ordering in Unity 5.6:
             //Pack this dummy camera to render to a single bottom left pixel (and render nothing on black solid background)
-            cam.clearFlags = CameraClearFlags.Nothing;//.SolidColor;
-            cam.backgroundColor = Color.black;
-            cam.cullingMask = 0; //render nothing
-            cam.rect = new Rect(0, 0, 0.001f, 0.001f);
-            cam.depth = -100; //doesn't seem to affect much in Unity 5.6 render order
-            cam.hideFlags = HideFlags.HideInInspector; //no need to see this camera or ever use it
+            projectionManagerCam.clearFlags = CameraClearFlags.Nothing;//.SolidColor;
+            projectionManagerCam.backgroundColor = Color.black;
+            projectionManagerCam.cullingMask = 0; //render nothing
+            projectionManagerCam.rect = new Rect(0, 0, 0.001f, 0.001f);
+            projectionManagerCam.depth = -100; //doesn't seem to affect much in Unity 5.6 render order
+            projectionManagerCam.hideFlags = HideFlags.HideInInspector; //no need to see this camera or ever use it
 
             //Also make sure that Gimos are turned off in the Game window!
 
@@ -127,21 +133,23 @@ namespace RoomAliveToolkit {
                 UpdateSetup();
             }
 	    }
+
         void OnPostRender()
         {
             if (!renderOnlyTextures)
             {
                 foreach (RATProjector projector in projections)
                 {
-                    projector.Render();
+                    projector.Render(); //  // make all the projectors render the scene
                 }
-            } else
+            }
+            else
             {
                 foreach (RATProjector projector in projections)
                 {
                     projector.RenderTexturesOnly();
                 }
-            }      
+            }
         }
 
         internal void RegisterUser(RATUserViewCamera user)

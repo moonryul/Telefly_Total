@@ -727,6 +727,8 @@
     <None Include="Assets\InstancedIndirectColor.shader" />
     <None Include="Assets\Movement.compute" />
     <None Include="Assets\Resources\121411\121411.xml" />
+    <None Include="Assets\Resources\121702\121702.xml" />
+    <None Include="Assets\Resources\121704\121704.xml" />
     <None Include="Assets\RoomAliveToolkit\Shaders\DepthMeshProcessing.cginc" />
     <None Include="Assets\RoomAliveToolkit\Shaders\DepthMeshSurfaceShader.shader" />
     <None Include="Assets\RoomAliveToolkit\Shaders\DynamicMaskShader.shader" />

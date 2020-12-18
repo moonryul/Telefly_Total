@@ -69,7 +69,7 @@ namespace RoomAliveToolkit
 
         public Camera viewCamera
         {
-            get { return cam; }
+            get { return userCam; }
         }
 
         protected int texWidth = 2048; //width of the off-screen render texture for this user view (needs to be power of 2)
@@ -86,13 +86,17 @@ namespace RoomAliveToolkit
 
         protected bool initialized = false;
         protected GameObject cameraGO;
-        protected Camera cam;
+
+        //protected Camera cam;
+
+        public Camera userCam; // expose the userview camera to inspector
+
         protected Rect rectReadRT;
         protected RATDepthMesh[] depthMeshes;
 
-        public DrawMeshInstancedIndirectDemo boid;
+        public DrawMeshInstancedIndirectDemo boid; // added to render the boids
 
-        public Camera boidCam;
+       // public Camera boidCam;
         public bool hasManager
         {
             get
@@ -106,20 +110,20 @@ namespace RoomAliveToolkit
             projectionLayers = gameObject.GetComponents<RATProjectionPass>();
 
             foreach (RATProjectionPass layer in projectionLayers)
-                layer.Init();
+                layer.Init(); // Init() ={ }
         }
 
         void Start()
         {
             boid = this.gameObject.transform.parent.GetChild(4).GetComponent<DrawMeshInstancedIndirectDemo>();
-            boidCam = Camera.main;
+           // boidCam = Camera.main;
 
             meshFilter = this.gameObject.AddComponent<MeshFilter>();
             meshRenderer = this.gameObject.AddComponent<MeshRenderer>(); // Add MeshRenderer to this.gameObject, User
             Shader unlitShader = Shader.Find("Unlit/Texture");
             meshMat = new Material(unlitShader); //  meshRenderer.sharedMaterial = meshMat;
                                                  // meshMat.mainTexture = targetRGBTexture;
-            debugPlaneM = new Mesh();
+            debugPlaneM = new Mesh();            // // The debug plane mesh to be added to MeshFilter by   meshFilter.mesh = debugPlaneM;
             meshFilter.hideFlags = HideFlags.HideInInspector;
             meshRenderer.hideFlags = HideFlags.HideInInspector;
             meshMat.hideFlags = HideFlags.HideInInspector;
@@ -132,14 +136,23 @@ namespace RoomAliveToolkit
             //Code assumes that this script is added to the camera GO 
             cameraGO = this.gameObject; //camera gameobject is 'USER'
 
-            cam = this.gameObject.GetComponent<Camera>();
-            if (cam == null)  // cam is null in our case; so add a camera component for the userview camera
-                cam = this.gameObject.AddComponent<Camera>();
-            cam.hideFlags = HideFlags.HideInInspector;  // | HideFlags.HideInHierarchy
+            userCam = this.gameObject.GetComponent<Camera>();
 
-            cam.rect = new Rect(0, 0, 1, 1);
-            cam.enabled = false; //important to disable this camera as we will be calling Render() directly. 
-            cam.aspect = texWidth / texHeight;
+            if (userCam == null)
+            { // cam is null in our case; so add a camera component for the userview camera
+
+                userCam = this.gameObject.AddComponent<Camera>(); // this.gameObject, User, will have Camera component
+                //Debug.Log($"cam.cullingMask at creation={cam.cullingMask}");
+            }
+
+            userCam.hideFlags = HideFlags.HideInInspector;  // | HideFlags.HideInHierarchy
+
+            userCam.rect = new Rect(0, 0, 1, 1);
+
+         
+            userCam.enabled = false; //important to disable this camera as we will be calling Render() directly. 
+
+            userCam.aspect = texWidth / texHeight;
 
             cameraGO.transform.localPosition = new Vector3();
 
@@ -159,12 +172,14 @@ namespace RoomAliveToolkit
         public void Update()
         {
             // this mostly updates the little debug view in the scene editor view
-            if (debugPlaneSize < 0)
+            if (debugPlaneSize < 0) //  // public float debugPlaneSize = 0.1f; 
                 debugPlaneSize = 0;
 
-            cam.nearClipPlane = nearClippingPlane; // cam is the userview camera
-            cam.farClipPlane = farClippingPlane;
-            cam.fieldOfView = fieldOfView;
+            userCam.nearClipPlane = nearClippingPlane; // cam is the userview camera
+            userCam.farClipPlane = farClippingPlane;
+            userCam.fieldOfView = fieldOfView;
+
+            
 
             meshRenderer.enabled = debugPlane != ViewDebugMode.None;
             if (meshRenderer.enabled)
@@ -175,8 +190,8 @@ namespace RoomAliveToolkit
                                                         // meshRenderer of that debug plane.
                 meshRenderer.sharedMaterial = meshMat; // meshRenderer will use  unlitShader = Shader.Find("Unlit/Texture");
 
-                float z = debugPlaneSize<= nearClippingPlane ? nearClippingPlane:debugPlaneSize;
-                float fac = Mathf.Tan(cam.fieldOfView / 2 / 180f * Mathf.PI);
+                float z = debugPlaneSize <= nearClippingPlane ? nearClippingPlane : debugPlaneSize;
+                float fac = Mathf.Tan(userCam.fieldOfView / 2 / 180f * Mathf.PI);
                 float w = z * fac;
                 float h = z * fac;
                 pos[0] = new Vector3(-w, h, nearClippingPlane);
@@ -185,10 +200,10 @@ namespace RoomAliveToolkit
                 pos[3] = new Vector3(w, -h, nearClippingPlane);
                 debugPlaneM.vertices = pos;
                 debugPlaneM.uv = uv;
-                debugPlaneM.triangles = indices;
+                debugPlaneM.triangles = indices; // // indices = new int[] { 0,1,2, 3,2,1}: two triangles
                 meshFilter.mesh = debugPlaneM;
             }
-        }
+        } // Update()
 
 
         public void LateUpdate()
@@ -207,65 +222,95 @@ namespace RoomAliveToolkit
         /// <summary>
         /// Render both virtual and physical objects together from the perspective of the user
         /// </summary>
+        /// 
+
         public void RenderUserView()
         {
             // draw virtual3dObject
-            cam.cullingMask = virtualObjectsMask;
-            cam.backgroundColor = backgroundColor;
+            // debug userCam.cullingMask = virtualObjectsMask;
 
-            cam.targetTexture = targetRGBTexture;
+            userCam.backgroundColor = backgroundColor;
 
-            cam.clearFlags = CameraClearFlags.SolidColor;
+            // debug userCam.targetTexture = targetRGBTexture; // off-screen rendering: // The result of rendering with userCam is stored in
+                                                      // the renderTexture targetRGBTexture. 
+
+            userCam.clearFlags = CameraClearFlags.SolidColor; //  // clear with the background color
             //when rendering from the perspective of the user, we want the real world to be rendered black 
             //so that the projectors are not re-projecting the textures of the real objects on top of those real objects
-            cam.Render(); // render virtual object by using mesh renderer of each virtual object
+
+            // debug userCam.Render(); // render virtual object by using mesh renderer of each virtual object
                            //(its material and shader(standard shader))
-            // end of render
+            // end of render of virtual3DObjects
 
-            cam.clearFlags = CameraClearFlags.Nothing;
+            // debug userCam.clearFlags = CameraClearFlags.Nothing;
 
-            // draw static and dynmaic surfaces
-            foreach (RATProjectionPass layer in projectionLayers)
-            {
-                if (layer.renderUserView && layer.userViewShader != null && layer.enabled)
-                {
-                    cam.cullingMask = layer.targetSurfaceLayers; // either StaticSurface or DynamicSurface
-                    Shader.SetGlobalColor("_ReplacementColor", realSurfaceColor);
+            //draw static and dynmaic surfaces
+            // debug comment:
+            //foreach (RATProjectionPass layer in projectionLayers) // there are two layers: StaticSurface and DynamicSurface
+            //{
+            //    if (layer.renderUserView && layer.userViewShader != null && layer.enabled)
+            //    {
+            //        userCam.cullingMask = layer.targetSurfaceLayers; // either StaticSurface or DynamicSurface
 
-                    cam.RenderWithShader(layer.userViewShader, null);
-                    
-                }
-            }
-            // end draw 
+            //        Shader.SetGlobalColor("_ReplacementColor", realSurfaceColor);
 
-            cam.clearFlags = CameraClearFlags.Nothing;
-            // draw the boids
-            Debug.Log($"( mainCamera = {Camera.main} ");
+            //        userCam.RenderWithShader(layer.userViewShader, null);
 
-            // Graphics.DrawMeshInstancedIndirect(boid.mesh, 0, boid.material, boid.bounds, boid.argsBuffer, camera: boidCam);
-            Graphics.DrawMeshInstancedIndirect(boid.mesh, 0, boid.material, boid.bounds, boid.argsBuffer, camera: cam);
-            //Graphics.DrawMeshInstancedIndirect(boid.mesh, 0, boid.material, boid.bounds, boid.argsBuffer, layer: boid.boidLayer, camera: cam);
+            //    }
+            //}
+            // end draw
 
-            cam.clearFlags = CameraClearFlags.SolidColor;
-        }
+            //userCam.clearFlags = CameraClearFlags.SolidColor;
 
-        public virtual void RenderProjection(Camera camera) // camera is a projector camera
+            // draw flocking boids
+            int GameObjectLayer = LayerMask.NameToLayer("Boid");
+
+           // Debug.Log($"ameObjectLayer = {GameObjectLayer}");
+
+            //int GameObjectLayer = this.gameObject.layer;
+
+           // userCam.enabled = true; // make the camera component enabled so that Graphics.DrawMesh(....camera:cam) work
+
+            userCam.cullingMask = 1 << GameObjectLayer;
+            //cam.cullingMask = -1; // all 111....11
+            //Debug.Log($"cam.cullingMask={userCam.cullingMask}");
+
+            Graphics.DrawMeshInstancedIndirect(boid.mesh, 0, boid.material, boid.bounds, boid.argsBuffer,
+                                                 layer: GameObjectLayer,
+                                                // layer: 0,
+                                                camera: userCam);
+
+
+        }//public void RenderUserView()
+
+        // called by userView.RenderProjection(cam) in RATProjector.cs; // render the user view image  to projector camera (cam) by means of 
+        // projective texture. 
+        public virtual void RenderProjection(Camera projectorCamera) // camera is a projector camera
         {
-            RATProjectionPass[] layers = projectionLayers;
+            // debug comment:
 
-            for (int layerId=0; layerId < layers.Length; layerId++) {
-                RATProjectionPass layer = layers[layerId];
-                if (layer == null || !layer.enabled || layer.projectionShader==null || !layer.renderProjectionPass)
-                    continue;
-                camera.cullingMask = layer.targetSurfaceLayers; // either StaticSurface or DynamicSurface
+            //RATProjectionPass[] layers = projectionLayers;
 
-                //todo preload IDs
-                Shader.SetGlobalVector("_UserViewPos", this.cam.transform.position); // this.cam is the userview camera
-                Shader.SetGlobalTexture("_UserViewPointRGB", targetRGBTexture); // targetRGBTexture is the userview Image
-                //Shader.SetGlobalTexture("_UserViewPointDepth", targetDepthTexture);
-                Shader.SetGlobalMatrix("_UserVP", this.cam.projectionMatrix * this.cam.worldToCameraMatrix);
-                camera.RenderWithShader(layer.projectionShader, null);
-            }
-        }
-    }
-}
+            //for (int layerId=0; layerId < layers.Length; layerId++) {
+            //    RATProjectionPass layer = layers[layerId];
+            //    if (layer == null || !layer.enabled || layer.projectionShader==null || !layer.renderProjectionPass)
+            //        continue;
+            //    projectorCamera.cullingMask = layer.targetSurfaceLayers; // either StaticSurface or DynamicSurface
+            //                                                             // render the targetSurface to the projector camera with
+            //                                                             // the render texture image (targetRGBTexture) from the user view;
+            //                                                             //The image rendered to the projector camera is the "pre-distorted" image
+            //                                                             // to be projected by the real projector.
+
+
+            //    //todo preload IDs
+            //    Shader.SetGlobalVector("_UserViewPos", this.userCam.transform.position); // this.cam is the userview camera
+
+            //    Shader.SetGlobalTexture("_UserViewPointRGB", targetRGBTexture); // targetRGBTexture is the userview Image
+
+            //    //Shader.SetGlobalTexture("_UserViewPointDepth", targetDepthTexture);
+            //    Shader.SetGlobalMatrix("_UserVP", this.userCam.projectionMatrix * this.userCam.worldToCameraMatrix);
+            //    projectorCamera.RenderWithShader(layer.projectionShader, null);
+            //}
+        } // RenderProjection
+    } // RATUserViewCamera
+}//namespace RoomAliveToolkit

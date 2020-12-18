@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KinectV2Server", "KinectV2Server\KinectV2Server.csproj", "{87B755B5-FADA-46A1-817A-662EC3981CD3}"
 EndProject
@@ -25,8 +25,8 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{87B755B5-FADA-46A1-817A-662EC3981CD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{87B755B5-FADA-46A1-817A-662EC3981CD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87B755B5-FADA-46A1-817A-662EC3981CD3}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{87B755B5-FADA-46A1-817A-662EC3981CD3}.Debug|Any CPU.Build.0 = Debug|x64
 		{87B755B5-FADA-46A1-817A-662EC3981CD3}.Debug|ARM.ActiveCfg = Debug|Any CPU
 		{87B755B5-FADA-46A1-817A-662EC3981CD3}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
 		{87B755B5-FADA-46A1-817A-662EC3981CD3}.Debug|Mixed Platforms.Build.0 = Debug|x64
@@ -43,8 +43,8 @@ Global
 		{87B755B5-FADA-46A1-817A-662EC3981CD3}.Release|x64.ActiveCfg = Release|Any CPU
 		{87B755B5-FADA-46A1-817A-662EC3981CD3}.Release|x64.Build.0 = Release|Any CPU
 		{87B755B5-FADA-46A1-817A-662EC3981CD3}.Release|x86.ActiveCfg = Release|Any CPU
-		{8568397F-55B7-450E-9348-802853E489B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8568397F-55B7-450E-9348-802853E489B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8568397F-55B7-450E-9348-802853E489B9}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{8568397F-55B7-450E-9348-802853E489B9}.Debug|Any CPU.Build.0 = Debug|x64
 		{8568397F-55B7-450E-9348-802853E489B9}.Debug|ARM.ActiveCfg = Debug|Any CPU
 		{8568397F-55B7-450E-9348-802853E489B9}.Debug|ARM.Build.0 = Debug|Any CPU
 		{8568397F-55B7-450E-9348-802853E489B9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -67,8 +67,8 @@ Global
 		{8568397F-55B7-450E-9348-802853E489B9}.Release|x64.Build.0 = Release|Any CPU
 		{8568397F-55B7-450E-9348-802853E489B9}.Release|x86.ActiveCfg = Release|Any CPU
 		{8568397F-55B7-450E-9348-802853E489B9}.Release|x86.Build.0 = Release|Any CPU
-		{D8A7FB2F-F8FD-4489-AA7B-82B57B12D6F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D8A7FB2F-F8FD-4489-AA7B-82B57B12D6F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8A7FB2F-F8FD-4489-AA7B-82B57B12D6F1}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{D8A7FB2F-F8FD-4489-AA7B-82B57B12D6F1}.Debug|Any CPU.Build.0 = Debug|x64
 		{D8A7FB2F-F8FD-4489-AA7B-82B57B12D6F1}.Debug|ARM.ActiveCfg = Debug|Any CPU
 		{D8A7FB2F-F8FD-4489-AA7B-82B57B12D6F1}.Debug|ARM.Build.0 = Debug|Any CPU
 		{D8A7FB2F-F8FD-4489-AA7B-82B57B12D6F1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -94,5 +94,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D7608490-BE5B-46B0-89F7-AECC67DB8594}
 	EndGlobalSection
 EndGlobal

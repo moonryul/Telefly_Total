@@ -33,7 +33,7 @@ namespace RoomAliveToolkit
         public int imageHeight = 800;
 
         public bool initialized { get; private set; }
-        internal Camera cam;
+        internal Camera projectorCam;
 
         private ProjectorCameraEnsemble.Projector projConfig;
         private RATDynamicMask dynamicMask;
@@ -58,25 +58,27 @@ namespace RoomAliveToolkit
 
         public void Awake()
         {
-            cam = this.gameObject.GetComponent<Camera>(); // this.gameObject is Projector_0
+            projectorCam = this.gameObject.GetComponent<Camera>(); // this.gameObject is Projector_0
             LoadCalibrationData();
             if (projectionManager == null)
             {
                 projectionManager = GetComponent<RATProjectionManager>();
-                if (projectionManager == null)
+                if (projectionManager == null) // // projectionManager is null in our tutorial. Go to the parent myRoom to get it
                     projectionManager = GetComponentInParent<RATProjectionManager>();
-                if (projectionManager == null)
+                if (projectionManager == null) //  // If the parent does not have it, search in the whole scene
                     projectionManager = GameObject.FindObjectOfType<RATProjectionManager>();
             }
             if (projectionManager != null)
                 projectionManager.RegisterProjector(this);
 
-            cam.enabled = false;
+            projectorCam.enabled = false; // set to false in order to use Camera.Render()
 
             dynamicMask = this.gameObject.GetComponent<RATDynamicMask>(); // get the reference if Projector_0, this.gameObject,
                                                                           // has RATDynamicMask component
                                                                           // RATDynamicMask has OnRenderImage() method; So it is assumed
                                                                           // that this.gameObjectis a Camera gameObject, i.e. a gameObject with Camera omponent.
+
+                                                                          // dynamicMask is null for the first tutorial ?
 
             initialized = true;
         }
@@ -96,7 +98,7 @@ namespace RoomAliveToolkit
 
         internal void LoadCalibrationData()
         {
-            cam = this.gameObject.GetComponent<Camera>(); // this.gameObject is Projector_0, which has a Camera component
+            projectorCam = this.gameObject.GetComponent<Camera>(); // this.gameObject is Projector_0, which has a Camera component
                                                           // RATProjectionManager has a list of projectors and userviewCameras
             projConfig = null;
             if (hasCalibration)
@@ -126,12 +128,12 @@ namespace RoomAliveToolkit
 
                 //// used by shadow etc...
                 //// this is the vertical field of view - fy
-                cam.aspect = (float)imageWidth / imageHeight;
+                projectorCam.aspect = (float)imageWidth / imageHeight;
                 float fieldOfViewRad = 2.0f * (float)Math.Atan((((double)(imageHeight)) / 2.0) / projConfig.cameraMatrix[1, 1]);
                 float fieldOfViewDeg = fieldOfViewRad / 3.14159265359f * 180.0f;
-                cam.fieldOfView = fieldOfViewDeg;
-                Matrix4x4 opencvProjMat = GetProjectionMatrix(projConfig.cameraMatrix, cam.nearClipPlane, cam.farClipPlane);
-                cam.projectionMatrix = UnityUtilities.ConvertRHtoLH(opencvProjMat);
+                projectorCam.fieldOfView = fieldOfViewDeg;
+                Matrix4x4 opencvProjMat = GetProjectionMatrix(projConfig.cameraMatrix, projectorCam.nearClipPlane, projectorCam.farClipPlane);
+                projectorCam.projectionMatrix = UnityUtilities.ConvertRHtoLH(opencvProjMat);
 
                 //var irCoef = projConfig.lensDistortion.AsFloatArray();
                 //! jolaur -- looks like this is not being used and is now 2 elements instead of four in the new xml format
@@ -158,6 +160,12 @@ namespace RoomAliveToolkit
 
             //the intrinsics are in Kinect coordinates: X - left, Y - up, Z, forward
             //we need the coordinates to be: X - right, Y - down, Z - forward
+
+
+            //In the image space x goes right, y goes top to bottom (i.e. down)
+            //However in the Kinect camera space x goes left, y goes up and z goes forward (right handed coordinate system).
+            //So to perform image lookup, we need to flip x and y. No other reason. 
+
             c_x = imageWidth - c_x;
             c_y = imageHeight - c_y;
 
@@ -185,12 +193,12 @@ namespace RoomAliveToolkit
 
         }
 
-        public void Render() // called by projector.Render() in RATProjectionManager.cs
+        public void Render() // called by projector.Render() from OnPostRender() in RATProjectionManager.cs
         {
             if (!hasManager)
                 return;
 
-            int prevCulling = cam.cullingMask; // save the culling mask of the projector camera
+            int prevCulling = projectorCam.cullingMask; // save the culling mask of the projector camera
 
             bool maskWasEnabled = false;
             if (dynamicMask != null)
@@ -201,14 +209,15 @@ namespace RoomAliveToolkit
             }
 
             // Render the virtualTexture layer (which is viewer independent) to the projector camera (cam)
-            cam.depth = 1;
-            cam.backgroundColor = projectionManager.backgroundColor;
-            cam.clearFlags = CameraClearFlags.SolidColor; //  Clear with a background color.
+            projectorCam.depth = 1;
+            projectorCam.backgroundColor = projectionManager.backgroundColor;
+            projectorCam.clearFlags = CameraClearFlags.SolidColor; //  Clear with a background color.
             //
 
-            cam.cullingMask = projectionManager.textureLayers; // specified in the inspector
+            projectorCam.cullingMask = projectionManager.textureLayers; // specified in the inspector
 
-            cam.Render();
+            projectorCam.Render(); // Render the virtual Texture object
+
             // End:  Render the gameObjects (virtual Objects) whose layer is virtualTexture  to the projector camera (cam).
             // If there are no such gameObjects, no virtualTexture will be drawn in space.
             // VirtualTextures – virtual objects that should be texture mapped onto existing surfaces; 
@@ -217,7 +226,8 @@ namespace RoomAliveToolkit
             // Add that plane to VirtualTextures layer. You are supposed to associate a texture image to this plane object,
             // to which MeshRenderer component is attached. 
             
-            cam.clearFlags = CameraClearFlags.Nothing; //  Don't clear anything; use the current color of the renderTexture result
+         
+            projectorCam.clearFlags = CameraClearFlags.Nothing; //  Don't clear anything; use the current color of the renderTexture result
                                                        //  of the previous rendering
             
             for (int i = 0; i < userCount; i++)
@@ -225,39 +235,42 @@ namespace RoomAliveToolkit
                 RATUserViewCamera userView = projectionManager.userViewCameras[i]; // ProjectioinManager has a list of userViewCameras
                 if (!userView.isActiveAndEnabled)
                     continue;
-                userView.RenderProjection(cam); // render the user view image  to projector camera (cam) by means of 
-                                                // projective texture. 
+                userView.RenderProjection(projectorCam); // render the user view image  to projector camera (cam) by means of 
+                                                         // projective texture
+                                                         // The image was rendered for userCam from the virtual objects in the scene
+                                                         //    RenderUserView() in LateUpdate() in RATUserViewCamera.cs;
+                                                         // This method will use this image  as a projective texture for rendering for projectorCam
             }
 
             if (dynamicMask != null && maskWasEnabled)
             {
                 dynamicMask.enabled = maskWasEnabled; // Enable DynamicMask object, so that its OnImageRender() is called
-                cam.clearFlags = CameraClearFlags.Nothing;
+                projectorCam.clearFlags = CameraClearFlags.Nothing;
 
-                cam.cullingMask = 0; // render nothing: cam is a projector camera
+                projectorCam.cullingMask = 0; // render nothing: 
 
-                cam.Render(); // it is assumed that RATDynamicMask component is attached to cam gameObject, 
+                projectorCam.Render(); // it is assumed that RATDynamicMask component is attached to cam gameObject, 
                               // so that OnImageRender() method of RATDynamicMaks is invoked upon cam.Render()
                 
             }
             
 
-            //Reset
-            cam.cullingMask = prevCulling;
-            cam.clearFlags = CameraClearFlags.SolidColor;
+            //Reset / Restore the setting
+            projectorCam.cullingMask = prevCulling;
+            projectorCam.clearFlags = CameraClearFlags.SolidColor;
         }
 
         public void RenderTexturesOnly()
         {
             if (!hasManager)
                 return;
-            cam.backgroundColor = projectionManager.backgroundColor;
-            cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.cullingMask = projectionManager.textureLayers;
+            projectorCam.backgroundColor = projectionManager.backgroundColor;
+            projectorCam.clearFlags = CameraClearFlags.SolidColor;
+            projectorCam.cullingMask = projectionManager.textureLayers;
             if (dynamicMask != null)
                 dynamicMask.enabled = true;
             //cam.enabled = true;
-            cam.Render();
+            projectorCam.Render();
         }
 
     }
