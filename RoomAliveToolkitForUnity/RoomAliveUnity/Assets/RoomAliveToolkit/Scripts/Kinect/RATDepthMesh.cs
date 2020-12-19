@@ -20,7 +20,7 @@ namespace RoomAliveToolkit
         /// </summary>
         public RATKinectClient kinectClient;
         /// <summary>
-        /// Material which encapsulates the custom depth mesh shader used for rendering depth meshes. 
+        /// Material which encapsulates the custom depth mesh shader used for rendering depth meshes (DynamicSurfaces). 
         /// </summary>
         public Material surfaceMaterial;
         /// <summary>
@@ -110,7 +110,7 @@ namespace RoomAliveToolkit
 
             inited = true;
 
-        }
+        }  // public void Start()
 
         private void UpdateMaterials()
         {

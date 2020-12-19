@@ -104,7 +104,7 @@ namespace RoomAliveToolkit {
             }
 
             UpdateSetup();
-        }
+        }  //void Start ()
 
         void UpdateSetup()
         {
@@ -136,6 +136,8 @@ namespace RoomAliveToolkit {
 
         void OnPostRender()
         {
+            // debug comment by Moon, 2020/12/19/8:52
+
             if (!renderOnlyTextures)
             {
                 foreach (RATProjector projector in projections)
